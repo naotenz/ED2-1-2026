@@ -1,6 +1,6 @@
 class Nodo234:
     def __init__(self):
-        self.valores = []
+        self.valores = []  # puede tener hasta 3 valores
         self.hijos = []
 
 
@@ -8,41 +8,33 @@ class Arbol234:
     def __init__(self):
         self.raiz = Nodo234()
 
-    # -------- ITERATIVO --------
-    def insertar_iter(self, valor):
+
+    # Inserción iterativa
+    def insertar(self, valor):
         nodo = self.raiz
 
         while True:
+
+            # Si nodo lleno → dividir
             if len(nodo.valores) == 3:
                 self.dividir(nodo)
 
+            # Si es hoja
             if not nodo.hijos:
                 nodo.valores.append(valor)
                 nodo.valores.sort()
                 return
-            else:
-                if valor < nodo.valores[0]:
-                    nodo = nodo.hijos[0]
-                elif len(nodo.valores) == 1 or valor < nodo.valores[1]:
-                    nodo = nodo.hijos[1]
-                else:
-                    nodo = nodo.hijos[-1]
 
-    # -------- DIVISIÓN --------
+            # Bajar al hijo correcto
+            if valor < nodo.valores[0]:
+                nodo = nodo.hijos[0]
+            elif len(nodo.valores) == 1 or valor < nodo.valores[1]:
+                nodo = nodo.hijos[1]
+            else:
+                nodo = nodo.hijos[-1]
+
+
+    # División de nodo
     def dividir(self, nodo):
         medio = nodo.valores[1]
-        # lógica simplificada
-
-    # -------- RECURSIVO (CONCEPTUAL) --------
-    def insertar_rec(self, nodo, valor):
-        if not nodo.hijos:
-            nodo.valores.append(valor)
-            nodo.valores.sort()
-            return nodo
-
-        if valor < nodo.valores[0]:
-            nodo.hijos[0] = self.insertar_rec(nodo.hijos[0], valor)
-        else:
-            nodo.hijos[-1] = self.insertar_rec(nodo.hijos[-1], valor)
-
-        return nodo
+        # lógica simplificada de división

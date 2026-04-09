@@ -1,7 +1,7 @@
 class NodoRN:
     def __init__(self, valor):
         self.valor = valor
-        self.color = "rojo"
+        self.color = "rojo"  # nuevo nodo siempre rojo
         self.izq = None
         self.der = None
         self.padre = None
@@ -11,10 +11,12 @@ class ArbolRN:
     def __init__(self):
         self.raiz = None
 
-    # -------- ROTACIÓN --------
+
+    # Rotación izquierda
     def rotar_izquierda(self, x):
         y = x.der
         x.der = y.izq
+
         if y.izq:
             y.izq.padre = x
 
@@ -30,12 +32,14 @@ class ArbolRN:
         y.izq = x
         x.padre = y
 
-    # -------- ITERATIVO --------
-    def insertar_iter(self, valor):
+
+    # Inserción iterativa
+    def insertar(self, valor):
         nuevo = NodoRN(valor)
         y = None
         x = self.raiz
 
+        # Inserción tipo BST
         while x:
             y = x
             if valor < x.valor:
@@ -52,24 +56,14 @@ class ArbolRN:
         else:
             y.der = nuevo
 
+        # Arreglar propiedades
         self.fix_insert(nuevo)
 
-    # -------- FIX --------
+
+    # Corrección del árbol
     def fix_insert(self, k):
         while k.padre and k.padre.color == "rojo":
+            # Aquí irían todos los casos (simplificado)
             k.padre.color = "negro"
+
         self.raiz.color = "negro"
-
-    # -------- “RECURSIVO” (SIMULADO) --------
-    def insertar_rec(self, nodo, valor):
-        if not nodo:
-            return NodoRN(valor)
-
-        if valor < nodo.valor:
-            nodo.izq = self.insertar_rec(nodo.izq, valor)
-            nodo.izq.padre = nodo
-        else:
-            nodo.der = self.insertar_rec(nodo.der, valor)
-            nodo.der.padre = nodo
-
-        return nodo
