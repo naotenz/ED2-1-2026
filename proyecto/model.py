@@ -57,7 +57,7 @@ class DiccionarioBST:
         """Elimina recursivamente manteniendo propiedades del BST."""
         if nodo is None:
             return None
-        if palabra < nodo.palabra:
+        if palabra < nodo.palabra:   #La palabra que busco es menor al nodo actual 
             nodo.izq = self._eliminar_recursivo(nodo.izq, palabra)
         elif palabra > nodo.palabra:
             nodo.der = self._eliminar_recursivo(nodo.der, palabra)

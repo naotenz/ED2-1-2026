@@ -1,4 +1,6 @@
 # Controlador - Lógica de aplicación
+from model import DiccionarioBST
+from view import Vista
 class Controlador:
     """Gestiona interacción entre Vista y Modelo."""
     def __init__(self):
@@ -39,10 +41,16 @@ class Controlador:
             self.vista.mostrar_resultado("Palabra no encontrada")
 
     def eliminar_palabra(self):
-        """Elimina palabra del diccionario."""
         palabra = input("Palabra a eliminar: ").strip()
-        self.diccionario.eliminar(palabra)
-        self.vista.mostrar_resultado(f"'{palabra}' eliminado")
+    
+        # Verificar si existe
+        resultado = self.diccionario.buscar(palabra)
+    
+        if resultado:
+            self.diccionario.eliminar(palabra)
+            self.vista.mostrar_resultado(f"'{palabra}' eliminado")
+        else:
+            self.vista.mostrar_resultado("Palabra no registrada")
 
 
 # Ejecución principal
