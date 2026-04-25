@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="card" style="margin-bottom: 24px; border: none; background: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+    <form method="get" action="{{ url_for('contactos.index') }}">
+      <div style="display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap;">
+        <div style="flex: 1 1 300px;">
+          <label for="q" style="margin-top: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Filtrar directorio</label>
+          <div style="position: relative;">
+            <input id="q" name="q" type="text" value="{{ q or '' }}" 
+                   placeholder="Buscar por nombre, tel o email..." 
+                   style="padding-left: 40px; border-color: var(--border);">
+            <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); opacity: 0.5;">
+              🔍
+            </span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-primary" type="submit" style="padding: 10px 24px;">Buscar</button>
+          {% if q %}
+            <a class="btn" href="{{ url_for('contactos.index') }}" style="background: #f1f5f9;">Limpiar</a>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="padding: 0; overflow: hidden; border: 1px solid var(--border);">
+    <table style="margin-top: 0;">
+      <thead style="background: #f8fafc;">
+        <tr>
+          <th style="width: 60px; text-align: center;">ID</th>
+          <th>Nombre</th>
+          <th>Información de Contacto</th>
+          <th style="width: 180px; text-align: right; padding-right: 24px;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if contactos %}
+          {% for c in contactos %}
+            <tr class="table-row">
+              <td style="text-align: center;"><span class="id-badge">{{ c.id }}</span></td>
+              <td>
+                <div style="font-weight: 600; color: var(--text-main);">{{ c.nombre }}</div>
+              </td>
+              <td>
+                <div style="display: flex; flex-direction: column; gap: 2px;">
+                  <span style="font-size: 0.9rem; display: flex; align-items: center; gap: 6px;">
+                    <small style="opacity: 0.5;">📞</small> {{ c.telefono or '—' }}
+                  </span>
+                  <span style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                    <small style="opacity: 0.5;">✉️</small> {{ c.correo or '—' }}
+                  </span>
+                </div>
+              </td>
+              <td style="text-align: right; padding-right: 24px;">
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                  <a class="btn-icon" href="{{ url_for('contactos.editar_get', contacto_id=c.id) }}" title="Editar">
+                    ✏️
+                  </a>
+                  <a class="btn-icon btn-icon-danger" href="{{ url_for('contactos.eliminar_get', contacto_id=c.id) }}" title="Eliminar">
+                    🗑️
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 48px; color: var(--text-muted);">
+              <div style="font-size: 2rem; margin-bottom: 8px;">📁</div>
+              No se encontraron contactos.
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <style>
+    .table-row:hover {
+      background-color: #fcfdfe;
+    }
+    .id-badge {
+      font-size: 0.75rem;
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .btn-icon {
+      text-decoration: none;
+      padding: 6px;
+      border-radius: 8px;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 1rem;
+      line-height: 1;
+    }
+    .btn-icon:hover {
+      background: #f8fafc;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .btn-icon-danger:hover {
+      border-color: #fee2e2;
+      background: #fef2f2;
+    }
+  </style>
+{% endblock %}

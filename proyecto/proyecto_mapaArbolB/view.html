@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Árbol Binario Visual</title>
+</head>
+<body>
+
+<h2>Visualizador de Árbol Binario</h2>
+
+<!-- ===== INPUT ===== -->
+<input type="text" id="valor" placeholder="Ingrese número o letra">
+<button onclick="insertar()">Insertar</button>
+<button onclick="limpiar()">Limpiar</button>
+
+<br><br>
+
+<!-- ===== RECORRIDOS ===== -->
+<button onclick="recorrido('inorden')">Inorden</button>
+<button onclick="recorrido('preorden')">Preorden</button>
+<button onclick="recorrido('postorden')">Postorden</button>
+
+<p id="resultado"></p>
+
+<br>
+
+<!-- ===== CANVAS ===== -->
+<canvas id="canvas" width="900" height="500" style="border:1px solid black;"></canvas>
+
+<script>
+
+// ================= INSERTAR =================
+function insertar() {
+    let valor = document.getElementById("valor").value;
+    // aquí obtiene el valor del input
+
+    fetch("/insertar", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({valor: valor})
+    })
+    .then(() => {
+        dibujar();
+        // aquí redibuja el árbol
+    });
+}
+
+// ================= LIMPIAR =================
+function limpiar() {
+    fetch("/limpiar", { method: "POST" })
+    .then(() => {
+        document.getElementById("resultado").innerText = "";
+        // aquí limpia el texto de resultados
+
+        dibujar();
+        // aquí limpia el árbol
+    });
+}
+
+// ================= RECORRIDOS =================
+function recorrido(tipo) {
+    fetch("/recorrido/" + tipo)
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("resultado").innerText = tipo + ": " + data;
+        // aquí muestra el resultado del recorrido
+    });
+}
+
+// ================= DIBUJAR ÁRBOL =================
+function dibujar() {
+    fetch("/arbol")
+    .then(res => res.json())
+    .then(data => {
+
+        let canvas = document.getElementById("canvas");
+        let ctx = canvas.getContext("2d");
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // aquí limpia el canvas
+
+        dibujarNodo(ctx, data, canvas.width / 2, 40, 200);
+        // aquí empieza desde la raíz
+    });
+}
+
+// ================= DIBUJAR NODOS =================
+function dibujarNodo(ctx, nodo, x, y, offset) {
+
+    if (!nodo) return;
+    // aquí verifica si el nodo existe
+
+    // círculo del nodo
+    ctx.beginPath();
+    ctx.arc(x, y, 20, 0, 2 * Math.PI);
+    ctx.stroke();
+
+    ctx.fillText(nodo.valor, x - 5, y + 5);
+    // aquí escribe el valor
+
+    // ===== izquierda =====
+    if (nodo.izquierda) {
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - offset, y + 80);
+        ctx.stroke();
+        // aquí dibuja la línea izquierda
+
+        dibujarNodo(ctx, nodo.izquierda, x - offset, y + 80, offset / 2);
+        // aquí recursividad izquierda
+    }
+
+    // ===== derecha =====
+    if (nodo.derecha) {
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + offset, y + 80);
+        ctx.stroke();
+        // aquí dibuja la línea derecha
+
+        dibujarNodo(ctx, nodo.derecha, x + offset, y + 80, offset / 2);
+        // aquí recursividad derecha
+    }
+}
+
+// ================= INICIO =================
+window.onload = function() {
+    dibujar();
+    // aquí dibuja el árbol al cargar
+};
+
+</script>
+
+</body>
+</html>

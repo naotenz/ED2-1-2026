@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 40px auto; border-top: 4px solid var(--danger);">
+    <div style="text-align: center; margin-bottom: 24px;">
+        <div style="background: #fee2e2; color: var(--danger); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 32px; font-weight: bold;">
+            !
+        </div>
+        <h2 style="margin: 0; color: var(--text-main); font-size: 1.5rem;">¿Eliminar contacto?</h2>
+        <p class="muted">Esta acción no se puede deshacer. Por favor, confirma los detalles.</p>
+    </div>
+
+    <div style="background: var(--bg); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+        <table style="width: 100%;">
+            <tbody>
+                <tr>
+                    <th style="width: 100px; text-align: left; border: none;">Nombre</th>
+                    <td style="font-weight: 600; border: none;">{{ contacto.nombre }}</td>
+                </tr>
+                <tr>
+                    <th style="text-align: left; border: none;">Correo</th>
+                    <td class="muted" style="border: none;">{{ contacto.correo }}</td>
+                </tr>
+                <tr>
+                    <th style="text-align: left; border: none;">Teléfono</th>
+                    <td class="muted" style="border: none;">{{ contacto.telefono }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <form method="post" action="{{ url_for('contactos.eliminar_post', contacto_id=contacto.id) }}">
+        <div style="display: flex; gap: 12px; justify-content: stretch;">
+            <button class="btn btn-danger" type="submit" style="flex: 1; justify-content: center; padding: 12px;">
+                Sí, eliminar contacto
+            </button>
+            <a class="btn" href="{{ url_for('contactos.editar_get', contacto_id=contacto.id) }}" style="flex: 1; justify-content: center; padding: 12px;">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

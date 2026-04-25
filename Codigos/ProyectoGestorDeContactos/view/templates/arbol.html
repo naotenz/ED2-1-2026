@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="card" style="margin-bottom: 24px;">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+      <div>
+        <h2 style="margin: 0;">Árbol Binario de Búsqueda (BST)</h2>
+        <div class="muted">Total de contactos: {{ total }}</div>
+      </div>
+      <a class="btn" href="{{ url_for('contactos.index') }}">Volver al listado</a>
+    </div>
+  </div>
+
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <pre style="margin: 0; padding: 20px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 0.95rem; line-height: 1.35; white-space: pre; overflow: auto;">{{ arbol_visual }}</pre>
+  </div>
+{% endblock %}
+

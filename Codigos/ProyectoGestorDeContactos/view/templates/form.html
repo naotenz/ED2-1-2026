@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 40px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--bg); padding-bottom: 16px;">
+        <h2 style="margin: 0; font-size: 1.5rem; color: var(--text-main);">
+            {% if modo == "nuevo" %}✨ Nuevo contacto{% else %}✏️ Editar contacto{% endif %}
+        </h2>
+        {% if modo == "editar" %}
+            <span class="muted" style="background: var(--bg); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">
+                ID: {{ contacto.id }}
+            </span>
+        {% endif %}
+    </div>
+
+    <form method="post" action="{{ action_url }}" style="display: flex; flex-direction: column; gap: 4px;">
+        <div class="form-group">
+            <label for="nombre">Nombre completo</label>
+            {% if modo == "editar" %}
+                <input id="nombre" name="nombre" type="text" value="{{ contacto.nombre }}" readonly style="background: var(--bg);">
+                <div class="muted" style="margin-top: 6px; font-size: 0.8rem;">
+                    El nombre es la clave del BST y no se edita.
+                </div>
+            {% else %}
+                <input id="nombre" name="nombre" type="text" placeholder="Ej. Juan Pérez" value="{{ contacto.nombre }}" required>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="telefono">Teléfono</label>
+            <input id="telefono" name="telefono" type="text" placeholder="+591 ..." value="{{ contacto.telefono }}">
+        </div>
+
+        <div class="form-group">
+            <label for="correo">Correo electrónico</label>
+            <input id="correo" name="correo" type="email" placeholder="nombre@ejemplo.com" value="{{ contacto.correo }}">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border);">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-primary" type="submit" style="padding: 10px 24px;">
+                    {% if modo == "nuevo" %}Crear ahora{% else %}Guardar cambios{% endif %}
+                </button>
+                <a class="btn" href="{{ url_for('contactos.index') }}">Cancelar</a>
+            </div>
+
+            {% if modo == "editar" %}
+                <a class="btn btn-danger" href="{{ url_for('contactos.eliminar_get', contacto_id=contacto.id) }}" style="border: none; background: transparent;">
+                    Eliminar
+                </a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Estilos adicionales específicos para el formulario */
+    .form-group {
+        margin-bottom: 4px;
+    }
+    .form-group label {
+        margin-bottom: 8px;
+        color: var(--text-main);
+        font-size: 0.85rem;
+    }
+    input::placeholder {
+        color: #cbd5e1;
+    }
+</style>
+{% endblock %}
