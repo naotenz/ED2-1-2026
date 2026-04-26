@@ -3,9 +3,12 @@ from model import DiccionarioBST
 from view import Vista
 class Controlador:
     """Gestiona interacción entre Vista y Modelo."""
+
     def __init__(self):
         self.diccionario = DiccionarioBST()
         self.vista = Vista()
+        
+    
 
     def ejecutar(self):
         """Ejecuta el programa principal."""
@@ -52,8 +55,3 @@ class Controlador:
         else:
             self.vista.mostrar_resultado("Palabra no registrada")
 
-
-# Ejecución principal
-if __name__ == "__main__":
-    app = Controlador()
-    app.ejecutar()
