@@ -25,12 +25,7 @@ class ArbolBinario:
 
     # ── NUEVO: busca un valor y retorna su info si existe ──────────────────────
     def buscar(self, valor):
-        """
-        Retorna un dict con posición y altura si el valor ya existe,
-        o None si no existe.
-        Posición: 'raíz' | 'izquierda' | 'derecha'
-        Altura: nivel del nodo (raíz = 0)
-        """
+        
         return self._buscar_rec(self.raiz, valor, padre=None, lado=None, altura=0)
 
     def _buscar_rec(self, nodo, valor, padre, lado, altura):
