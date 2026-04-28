@@ -1,7 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Árbol Binario Visual</title>
+  <title>Árbol Binario Visual</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+
+    #aviso {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      max-width: 500px;
+    }
+    #aviso.ok {
+      background: #d4edda;
+      border: 1px solid #28a745;
+      color: #155724;
+    }
+    #aviso.duplicado {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      color: #856404;
+    }
+  </style>
 </head>
 <body>
 
@@ -12,13 +34,15 @@
 <button onclick="insertar()">Insertar</button>
 <button onclick="limpiar()">Limpiar</button>
 
-<br><br>
+<!-- ===== AVISO DUPLICADO / OK ===== -->
+<div id="aviso"></div>
+
+<br>
 
 <!-- ===== RECORRIDOS ===== -->
 <button onclick="recorrido('inorden')">Inorden</button>
 <button onclick="recorrido('preorden')">Preorden</button>
 <button onclick="recorrido('postorden')">Postorden</button>
-
 <p id="resultado"></p>
 
 <br>
@@ -28,109 +52,108 @@
 
 <script>
 
-// ================= INSERTAR =================
-function insertar() {
-    let valor = document.getElementById("valor").value;
-    // aquí obtiene el valor del input
+  // ================= INSERTAR =================
+  function insertar() {
+    let valor = document.getElementById("valor").value.trim();
+    if (!valor) return;                             // aquí evita insertar vacío
 
     fetch("/insertar", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({valor: valor})
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({valor: valor})
     })
-    .then(() => {
-        dibujar();
-        // aquí redibuja el árbol
-    });
-}
+    .then(res => res.json())
+    .then(data => {
+      const aviso = document.getElementById("aviso");
 
-// ================= LIMPIAR =================
-function limpiar() {
+      if (data.mensaje === "duplicado") {
+        // ── mostrar aviso de duplicado ─────────────────────────────────────
+        aviso.className  = "duplicado";
+        aviso.style.display = "block";
+        aviso.innerHTML  = `
+          ⚠️ <strong>'${valor}'</strong> ya existe en el árbol.<br>
+          📍 Posición: <strong>${data.posicion}</strong> &nbsp;|&nbsp;
+          📏 Altura: <strong>nivel ${data.altura}</strong>
+        `;
+        // aquí NO redibuja porque el árbol no cambió
+      } else {
+        // ── inserción exitosa ──────────────────────────────────────────────
+        aviso.className  = "ok";
+        aviso.style.display = "block";
+        aviso.innerHTML  = `✅ <strong>'${valor}'</strong> insertado correctamente.`;
+        dibujar();                                  // aquí redibuja el árbol
+      }
+
+      // aquí oculta el aviso automáticamente a los 4 segundos
+      setTimeout(() => { aviso.style.display = "none"; }, 4000);
+    });
+  }
+
+  // ================= LIMPIAR =================
+  function limpiar() {
     fetch("/limpiar", { method: "POST" })
     .then(() => {
-        document.getElementById("resultado").innerText = "";
-        // aquí limpia el texto de resultados
-
-        dibujar();
-        // aquí limpia el árbol
+      document.getElementById("resultado").innerText = "";  // aquí limpia el texto de resultados
+      document.getElementById("aviso").style.display = "none";
+      dibujar();                                            // aquí limpia el canvas
     });
-}
+  }
 
-// ================= RECORRIDOS =================
-function recorrido(tipo) {
+  // ================= RECORRIDOS =================
+  function recorrido(tipo) {
     fetch("/recorrido/" + tipo)
     .then(res => res.json())
     .then(data => {
-        document.getElementById("resultado").innerText = tipo + ": " + data;
-        // aquí muestra el resultado del recorrido
+      document.getElementById("resultado").innerText = tipo + ": " + data; // aquí muestra el resultado
     });
-}
+  }
 
-// ================= DIBUJAR ÁRBOL =================
-function dibujar() {
+  // ================= DIBUJAR ÁRBOL =================
+  function dibujar() {
     fetch("/arbol")
     .then(res => res.json())
     .then(data => {
-
-        let canvas = document.getElementById("canvas");
-        let ctx = canvas.getContext("2d");
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        // aquí limpia el canvas
-
-        dibujarNodo(ctx, data, canvas.width / 2, 40, 200);
-        // aquí empieza desde la raíz
+      let canvas = document.getElementById("canvas");
+      let ctx    = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);    // aquí limpia el canvas
+      dibujarNodo(ctx, data, canvas.width / 2, 40, 200);   // aquí empieza desde la raíz
     });
-}
+  }
 
-// ================= DIBUJAR NODOS =================
-function dibujarNodo(ctx, nodo, x, y, offset) {
-
-    if (!nodo) return;
-    // aquí verifica si el nodo existe
+  // ================= DIBUJAR NODOS =================
+  function dibujarNodo(ctx, nodo, x, y, offset) {
+    if (!nodo) return;                                      // aquí verifica si el nodo existe
 
     // círculo del nodo
     ctx.beginPath();
     ctx.arc(x, y, 20, 0, 2 * Math.PI);
     ctx.stroke();
-
-    ctx.fillText(nodo.valor, x - 5, y + 5);
-    // aquí escribe el valor
+    ctx.fillText(nodo.valor, x - 5, y + 5);                // aquí escribe el valor
 
     // ===== izquierda =====
     if (nodo.izquierda) {
-
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x - offset, y + 80);
-        ctx.stroke();
-        // aquí dibuja la línea izquierda
-
-        dibujarNodo(ctx, nodo.izquierda, x - offset, y + 80, offset / 2);
-        // aquí recursividad izquierda
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - offset, y + 80);
+      ctx.stroke();                                         // aquí dibuja la línea izquierda
+      dibujarNodo(ctx, nodo.izquierda, x - offset, y + 80, offset / 2); // aquí recursividad izquierda
     }
 
     // ===== derecha =====
     if (nodo.derecha) {
-
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x + offset, y + 80);
-        ctx.stroke();
-        // aquí dibuja la línea derecha
-
-        dibujarNodo(ctx, nodo.derecha, x + offset, y + 80, offset / 2);
-        // aquí recursividad derecha
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + offset, y + 80);
+      ctx.stroke();                                         // aquí dibuja la línea derecha
+      dibujarNodo(ctx, nodo.derecha, x + offset, y + 80, offset / 2);   // aquí recursividad derecha
     }
-}
+  }
 
-// ================= INICIO =================
-window.onload = function() {
-    dibujar();
-    // aquí dibuja el árbol al cargar
-};
+  // ================= INICIO =================
+  window.onload = function() {
+    dibujar();                                              // aquí dibuja el árbol al cargar
+  };
 
 </script>
-
 </body>
 </html>
