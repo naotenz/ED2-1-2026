@@ -75,7 +75,7 @@
           📍 Posición: <strong>${data.posicion}</strong> &nbsp;|&nbsp;
           📏 Altura: <strong>nivel ${data.altura}</strong>
         `;
-        // aquí NO redibuja porque el árbol no cambió
+        
       } else {
         // ── inserción exitosa ──────────────────────────────────────────────
         aviso.className  = "ok";
@@ -93,9 +93,9 @@
   function limpiar() {
     fetch("/limpiar", { method: "POST" })
     .then(() => {
-      document.getElementById("resultado").innerText = "";  // aquí limpia el texto de resultados
+      document.getElementById("resultado").innerText = "";  
       document.getElementById("aviso").style.display = "none";
-      dibujar();                                            // aquí limpia el canvas
+      dibujar();                                            
     });
   }
 
@@ -104,7 +104,7 @@
     fetch("/recorrido/" + tipo)
     .then(res => res.json())
     .then(data => {
-      document.getElementById("resultado").innerText = tipo + ": " + data; // aquí muestra el resultado
+      document.getElementById("resultado").innerText = tipo + ": " + data; 
     });
   }
 
@@ -115,28 +115,28 @@
     .then(data => {
       let canvas = document.getElementById("canvas");
       let ctx    = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);    // aquí limpia el canvas
-      dibujarNodo(ctx, data, canvas.width / 2, 40, 200);   // aquí empieza desde la raíz
+      ctx.clearRect(0, 0, canvas.width, canvas.height);    
+      dibujarNodo(ctx, data, canvas.width / 2, 40, 200);   
     });
   }
 
   // ================= DIBUJAR NODOS =================
   function dibujarNodo(ctx, nodo, x, y, offset) {
-    if (!nodo) return;                                      // aquí verifica si el nodo existe
+    if (!nodo) return;                                      
 
     // círculo del nodo
     ctx.beginPath();
     ctx.arc(x, y, 20, 0, 2 * Math.PI);
     ctx.stroke();
-    ctx.fillText(nodo.valor, x - 5, y + 5);                // aquí escribe el valor
+    ctx.fillText(nodo.valor, x - 5, y + 5);                
 
     // ===== izquierda =====
     if (nodo.izquierda) {
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x - offset, y + 80);
-      ctx.stroke();                                         // aquí dibuja la línea izquierda
-      dibujarNodo(ctx, nodo.izquierda, x - offset, y + 80, offset / 2); // aquí recursividad izquierda
+      ctx.stroke();                                         
+      dibujarNodo(ctx, nodo.izquierda, x - offset, y + 80, offset / 2); 
     }
 
     // ===== derecha =====
@@ -144,14 +144,14 @@
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x + offset, y + 80);
-      ctx.stroke();                                         // aquí dibuja la línea derecha
-      dibujarNodo(ctx, nodo.derecha, x + offset, y + 80, offset / 2);   // aquí recursividad derecha
+      ctx.stroke();                                         
+      dibujarNodo(ctx, nodo.derecha, x + offset, y + 80, offset / 2);   
     }
   }
 
   // ================= INICIO =================
   window.onload = function() {
-    dibujar();                                              // aquí dibuja el árbol al cargar
+    dibujar();                                              
   };
 
 </script>

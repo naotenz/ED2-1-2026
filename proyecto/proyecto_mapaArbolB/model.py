@@ -16,9 +16,9 @@ class ArbolBinario:
         if nodo is None:
             return Nodo(valor)
         cmp = self._comparar(valor, nodo.valor)
-        if cmp < 0:                 # aquí va a la izquierda
+        if cmp < 0:                 
             nodo.izquierda = self._insertar_rec(nodo.izquierda, valor)
-        elif cmp > 0:               # aquí va a la derecha
+        elif cmp > 0:               
             nodo.derecha = self._insertar_rec(nodo.derecha, valor)
         # si cmp == 0 → duplicado, no hace nada (se maneja antes de llamar a insertar)
         return nodo
@@ -55,30 +55,30 @@ class ArbolBinario:
     # ──────────────────────────────────────────────────────────────────────────
 
     def inorden(self, nodo, resultado):
-        if nodo is not None:                        # aquí verifica que el nodo exista
-            self.inorden(nodo.izquierda, resultado) # aquí recorre el lado izquierdo
-            resultado.append(nodo.valor)            # aquí agrega el nodo actual
-            self.inorden(nodo.derecha, resultado)   # aquí recorre el lado derecho
+        if nodo is not None:                        
+            self.inorden(nodo.izquierda, resultado) 
+            resultado.append(nodo.valor)            
+            self.inorden(nodo.derecha, resultado)   
 
     def preorden(self, nodo, resultado):
-        if nodo is not None:                        # aquí verifica que el nodo exista
-            resultado.append(nodo.valor)            # aquí agrega primero el nodo actual
-            self.preorden(nodo.izquierda, resultado)# aquí recorre el lado izquierdo
-            self.preorden(nodo.derecha, resultado)  # aquí recorre el lado derecho
+        if nodo is not None:                        
+            resultado.append(nodo.valor)            
+            self.preorden(nodo.izquierda, resultado)
+            self.preorden(nodo.derecha, resultado)  
 
     def postorden(self, nodo, resultado):
-        if nodo is not None:                        # aquí verifica que el nodo exista
-            self.postorden(nodo.izquierda, resultado)# aquí recorre el lado izquierdo
-            self.postorden(nodo.derecha, resultado) # aquí recorre el lado derecho
-            resultado.append(nodo.valor)            # aquí agrega el nodo al final
+        if nodo is not None:                        
+            self.postorden(nodo.izquierda, resultado)
+            self.postorden(nodo.derecha, resultado) 
+            resultado.append(nodo.valor)            
 
     def obtener_estructura(self, nodo):
         if nodo is None:                            # aquí verifica si el nodo está vacío
             return None
         return {
-            "valor": nodo.valor,                                            # aquí guarda el valor del nodo
-            "izquierda": self.obtener_estructura(nodo.izquierda),           # aquí obtiene recursivamente el hijo izquierdo
-            "derecha":   self.obtener_estructura(nodo.derecha)              # aquí obtiene recursivamente el hijo derecho
+            "valor": nodo.valor,                                            
+            "izquierda": self.obtener_estructura(nodo.izquierda),           
+            "derecha":   self.obtener_estructura(nodo.derecha)              
         }
 
     def _es_numero(self, valor):
