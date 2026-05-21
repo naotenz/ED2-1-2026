@@ -1,0 +1,170 @@
+# ==========================================
+# LABORATORIO: ADT ÁRBOL M-VÍAS
+# Implementación con getters y setters
+# ==========================================
+
+class NodoMVias:
+    def __init__(self, orden, dato=None):
+        self.__orden = orden
+        self.__datos = [None] * (orden - 1)
+        self.__hijos = [None] * orden
+
+        if dato is not None:
+            self.__datos[0] = dato
+
+    # ==========================
+    # GETTERS
+    # ==========================
+
+    def get_dato(self, posicion):
+        return self.__datos[posicion]
+
+    def get_hijo(self, posicion):
+        return self.__hijos[posicion]
+
+    def get_orden(self):
+        return self.__orden
+
+    def get_datos(self):
+        return self.__datos
+
+    def get_hijos(self):
+        return self.__hijos
+
+    # ==========================
+    # SETTERS
+    # ==========================
+
+    def set_dato(self, posicion, valor):
+        self.__datos[posicion] = valor
+
+    def set_hijo(self, posicion, nodo):
+        self.__hijos[posicion] = nodo
+
+    # ==========================
+    # MÉTODOS AUXILIARES
+    # ==========================
+
+    def es_dato_vacio(self, posicion):
+        return self.__datos[posicion] is None
+
+    def es_hijo_vacio(self, posicion):
+        return self.__hijos[posicion] is None
+
+    def es_hoja(self):
+        for hijo in self.__hijos:
+            if hijo is not None:
+                return False
+        return True
+
+    def estan_datos_llenos(self):
+        return None not in self.__datos
+
+    def cantidad_datos_no_vacios(self):
+        contador = 0
+        for dato in self.__datos:
+            if dato is not None:
+                contador += 1
+        return contador
+
+
+# ==========================================
+# CLASE ÁRBOL M-VÍAS
+# ==========================================
+
+class ArbolMVias:
+    def __init__(self, orden):
+        self.__raiz = None
+        self.__orden = orden
+
+    # ==========================
+    # GETTERS
+    # ==========================
+
+    def get_raiz(self):
+        return self.__raiz
+
+    def get_orden(self):
+        return self.__orden
+
+    # ==========================
+    # SETTERS
+    # ==========================
+
+    def set_raiz(self, nodo):
+        self.__raiz = nodo
+
+    # ==========================
+    # INSERTAR
+    # ==========================
+
+    def insertar(self, dato):
+        if self.__raiz is None:
+            self.__raiz = NodoMVias(self.__orden, dato)
+        else:
+            self.__insertar(self.__raiz, dato)
+
+    def __insertar(self, nodo, dato):
+        cantidad = nodo.cantidad_datos_no_vacios()
+
+        # Si hay espacio en el nodo
+        if not nodo.estan_datos_llenos():
+            i = cantidad - 1
+
+            while i >= 0 and nodo.get_dato(i) > dato:
+                nodo.set_dato(i + 1, nodo.get_dato(i))
+                i -= 1
+
+            nodo.set_dato(i + 1, dato)
+            return
+
+        # Buscar hijo correspondiente
+        i = 0
+        while i < cantidad and dato > nodo.get_dato(i):
+            i += 1
+
+        if nodo.es_hijo_vacio(i):
+            nuevo = NodoMVias(self.__orden, dato)
+            nodo.set_hijo(i, nuevo)
+        else:
+            self.__insertar(nodo.get_hijo(i), dato)
+
+    # ==========================
+    # RECORRIDO INORDEN
+    # ==========================
+
+    def inorden(self):
+        self.__inorden(self.__raiz)
+
+    def __inorden(self, nodo):
+        if nodo is None:
+            return
+
+        cantidad = nodo.cantidad_datos_no_vacios()
+
+        for i in range(cantidad):
+            self.__inorden(nodo.get_hijo(i))
+            print(nodo.get_dato(i), end=" ")
+
+        self.__inorden(nodo.get_hijo(cantidad))
+
+
+# ==========================================
+# PROGRAMA PRINCIPAL
+# ==========================================
+
+if __name__ == "__main__":
+    arbol = ArbolMVias(4)
+
+    # Insertar datos
+    arbol.insertar(50)
+    arbol.insertar(30)
+    arbol.insertar(70)
+    arbol.insertar(20)
+    arbol.insertar(40)
+    arbol.insertar(60)
+    arbol.insertar(80)
+
+    # Mostrar recorrido
+    print("Recorrido Inorden:")
+    arbol.inorden()
