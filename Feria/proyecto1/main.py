@@ -1,5 +1,6 @@
 from controlador import Controlador
 
-app = Controlador()
+if __name__ == "__main__":
 
-app.vista.iniciar()
+    app = Controlador()
+    app.iniciar()

@@ -5,19 +5,22 @@ import csv
 class ArbolMVias:
 
     def __init__(self, orden=4):
-
         self.orden = orden
         self.raiz = None
         self.comparaciones = 0
 
-    # ======================
-    # INSERCION
-    # ======================
+    # ==================================================
+    # INSERCIÓN
+    # ==================================================
 
     def insertar(self, palabra):
 
-        if self.raiz is None:
+        palabra = palabra.strip().upper()
 
+        if not palabra:
+            return
+
+        if self.raiz is None:
             self.raiz = NodoMVias(self.orden)
             self.raiz.claves.append(palabra)
             return
@@ -30,7 +33,6 @@ class ArbolMVias:
             return
 
         if len(nodo.claves) < self.orden - 1:
-
             nodo.claves.append(palabra)
             nodo.claves.sort()
             return
@@ -41,26 +43,21 @@ class ArbolMVias:
             i += 1
 
         if nodo.hijos[i] is None:
-
             nodo.hijos[i] = NodoMVias(self.orden)
             nodo.hijos[i].claves.append(palabra)
-
         else:
-
             self._insertar(nodo.hijos[i], palabra)
 
-    # ======================
-    # BUSQUEDA
-    # ======================
+    # ==================================================
+    # BÚSQUEDA SECUENCIAL
+    # ==================================================
 
     def buscar(self, palabra):
 
+        palabra = palabra.upper()
         self.comparaciones = 0
 
-        encontrado = self._buscar(
-            self.raiz,
-            palabra
-        )
+        encontrado = self._buscar(self.raiz, palabra)
 
         return encontrado, self.comparaciones
 
@@ -79,20 +76,60 @@ class ArbolMVias:
         i = 0
 
         while i < len(nodo.claves) and palabra > nodo.claves[i]:
-
             self.comparaciones += 1
             i += 1
 
-        return self._buscar(
-            nodo.hijos[i],
+        return self._buscar(nodo.hijos[i], palabra)
+
+    # ==================================================
+    # BÚSQUEDA BINARIA
+    # ==================================================
+
+    def buscar_binaria(self, palabra):
+
+        palabra = palabra.upper()
+        self.comparaciones = 0
+
+        return self._buscar_binaria(
+            self.raiz,
             palabra
         )
 
-    # ======================
+    def _buscar_binaria(self, nodo, palabra):
+
+        if nodo is None:
+            return False, self.comparaciones
+
+        izquierda = 0
+        derecha = len(nodo.claves) - 1
+
+        while izquierda <= derecha:
+
+            medio = (izquierda + derecha) // 2
+
+            self.comparaciones += 1
+
+            if nodo.claves[medio] == palabra:
+                return True, self.comparaciones
+
+            elif palabra < nodo.claves[medio]:
+                derecha = medio - 1
+
+            else:
+                izquierda = medio + 1
+
+        return self._buscar_binaria(
+            nodo.hijos[izquierda],
+            palabra
+        )
+
+    # ==================================================
     # ELIMINAR
-    # ======================
+    # ==================================================
 
     def eliminar(self, palabra):
+
+        palabra = palabra.upper()
 
         self.raiz = self._eliminar(
             self.raiz,
@@ -108,7 +145,7 @@ class ArbolMVias:
 
             nodo.claves.remove(palabra)
 
-            if len(nodo.claves) == 0:
+            if len(nodo.claves) == 0 and nodo.es_hoja():
                 return None
 
             return nodo
@@ -125,9 +162,9 @@ class ArbolMVias:
 
         return nodo
 
-    # ======================
+    # ==================================================
     # RECORRIDO
-    # ======================
+    # ==================================================
 
     def obtener_palabras(self):
 
@@ -161,16 +198,17 @@ class ArbolMVias:
             lista
         )
 
-    # ======================
-    # CARGAR TXT
-    # ======================
+    # ==================================================
+    # CARGA TXT
+    # ==================================================
 
     def cargar_txt(self, archivo):
 
         with open(
-                archivo,
-                "r",
-                encoding="utf-8") as f:
+            archivo,
+            "r",
+            encoding="utf-8"
+        ) as f:
 
             for linea in f:
 
@@ -179,16 +217,17 @@ class ArbolMVias:
                 if palabra:
                     self.insertar(palabra)
 
-    # ======================
-    # CARGAR CSV
-    # ======================
+    # ==================================================
+    # CARGA CSV
+    # ==================================================
 
     def cargar_csv(self, archivo):
 
         with open(
-                archivo,
-                newline="",
-                encoding="utf-8") as f:
+            archivo,
+            newline="",
+            encoding="utf-8"
+        ) as f:
 
             lector = csv.reader(f)
 
@@ -201,21 +240,15 @@ class ArbolMVias:
                     if palabra:
                         self.insertar(palabra)
 
-    # ======================
-    # ESTADISTICAS
-    # ======================
+    # ==================================================
+    # ESTADÍSTICAS
+    # ==================================================
 
     def cantidad_palabras(self):
-
-        return len(
-            self.obtener_palabras()
-        )
+        return len(self.obtener_palabras())
 
     def contar_nodos(self):
-
-        return self._contar_nodos(
-            self.raiz
-        )
+        return self._contar_nodos(self.raiz)
 
     def _contar_nodos(self, nodo):
 
@@ -230,10 +263,7 @@ class ArbolMVias:
         return total
 
     def altura(self):
-
-        return self._altura(
-            self.raiz
-        )
+        return self._altura(self.raiz)
 
     def _altura(self, nodo):
 
@@ -243,12 +273,8 @@ class ArbolMVias:
         alturas = []
 
         for hijo in nodo.hijos:
-
             alturas.append(
                 self._altura(hijo)
             )
 
-        return 1 + max(
-            alturas,
-            default=0
-        )
+        return 1 + max(alturas, default=0)
