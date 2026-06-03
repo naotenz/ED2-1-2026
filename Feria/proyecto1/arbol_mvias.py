@@ -1,265 +1,177 @@
-from nodo_mvias import NodoMVias
 import csv
+from nodo_mvias import NodoMVias
 
 
 class ArbolMVias:
 
-    def __init__(self, orden=4):
+    def __init__(self, orden):
         self.orden = orden
         self.raiz = None
         self.comparaciones = 0
 
-    # ==================================================
-    # INSERCIÓN
-    # ==================================================
+    # =========================
+    # INSERTAR
+    # =========================
 
-    def insertar(self, palabra):
+    def insertar(self, valor):
 
-        palabra = palabra.strip().upper()
-
-        if not palabra:
+        if not valor:
             return
+
+        valor = valor.upper()
 
         if self.raiz is None:
             self.raiz = NodoMVias(self.orden)
-            self.raiz.claves.append(palabra)
+            self.raiz.claves.append(valor)
             return
 
-        self._insertar(self.raiz, palabra)
+        self._insertar(self.raiz, valor)
 
-    def _insertar(self, nodo, palabra):
+    def _insertar(self, nodo, valor):
 
-        if palabra in nodo.claves:
+        if valor in nodo.claves:
             return
 
         if len(nodo.claves) < self.orden - 1:
-            nodo.claves.append(palabra)
+            nodo.claves.append(valor)
             nodo.claves.sort()
             return
 
         i = 0
-
-        while i < len(nodo.claves) and palabra > nodo.claves[i]:
+        while i < len(nodo.claves) and valor > nodo.claves[i]:
             i += 1
 
         if nodo.hijos[i] is None:
             nodo.hijos[i] = NodoMVias(self.orden)
-            nodo.hijos[i].claves.append(palabra)
+            nodo.hijos[i].claves.append(valor)
         else:
-            self._insertar(nodo.hijos[i], palabra)
+            self._insertar(nodo.hijos[i], valor)
 
-    # ==================================================
+    # =========================
     # BÚSQUEDA SECUENCIAL
-    # ==================================================
+    # =========================
 
-    def buscar(self, palabra):
+    def buscar(self, valor):
 
-        palabra = palabra.upper()
+        valor = valor.upper()
         self.comparaciones = 0
 
-        encontrado = self._buscar(self.raiz, palabra)
+        return self._buscar(self.raiz, valor)
 
-        return encontrado, self.comparaciones
-
-    def _buscar(self, nodo, palabra):
-
-        if nodo is None:
-            return False
-
-        for clave in nodo.claves:
-
-            self.comparaciones += 1
-
-            if clave == palabra:
-                return True
-
-        i = 0
-
-        while i < len(nodo.claves) and palabra > nodo.claves[i]:
-            self.comparaciones += 1
-            i += 1
-
-        return self._buscar(nodo.hijos[i], palabra)
-
-    # ==================================================
-    # BÚSQUEDA BINARIA
-    # ==================================================
-
-    def buscar_binaria(self, palabra):
-
-        palabra = palabra.upper()
-        self.comparaciones = 0
-
-        return self._buscar_binaria(
-            self.raiz,
-            palabra
-        )
-
-    def _buscar_binaria(self, nodo, palabra):
+    def _buscar(self, nodo, valor):
 
         if nodo is None:
             return False, self.comparaciones
 
-        izquierda = 0
-        derecha = len(nodo.claves) - 1
-
-        while izquierda <= derecha:
-
-            medio = (izquierda + derecha) // 2
-
+        for c in nodo.claves:
             self.comparaciones += 1
-
-            if nodo.claves[medio] == palabra:
+            if c == valor:
                 return True, self.comparaciones
 
-            elif palabra < nodo.claves[medio]:
-                derecha = medio - 1
+        i = 0
+        while i < len(nodo.claves) and valor > nodo.claves[i]:
+            self.comparaciones += 1
+            i += 1
 
+        return self._buscar(nodo.hijos[i], valor)
+
+    # =========================
+    # BÚSQUEDA BINARIA
+    # =========================
+
+    def buscar_binaria(self, valor):
+
+        valor = valor.upper()
+        self.comparaciones = 0
+
+        return self._buscar_binaria(self.raiz, valor)
+
+    def _buscar_binaria(self, nodo, valor):
+
+        if nodo is None:
+            return False, self.comparaciones
+
+        izq = 0
+        der = len(nodo.claves) - 1
+
+        while izq <= der:
+
+            mid = (izq + der) // 2
+            self.comparaciones += 1
+
+            if nodo.claves[mid] == valor:
+                return True, self.comparaciones
+            elif valor < nodo.claves[mid]:
+                der = mid - 1
             else:
-                izquierda = medio + 1
+                izq = mid + 1
 
-        return self._buscar_binaria(
-            nodo.hijos[izquierda],
-            palabra
-        )
+        return self._buscar_binaria(nodo.hijos[izq], valor)
 
-    # ==================================================
-    # ELIMINAR
-    # ==================================================
+    # =========================
+    # ELIMINAR (simple)
+    # =========================
 
-    def eliminar(self, palabra):
+    def eliminar(self, valor):
 
-        palabra = palabra.upper()
+        if self.raiz is None:
+            return
 
-        self.raiz = self._eliminar(
-            self.raiz,
-            palabra
-        )
+        valor = valor.upper()
+        self.raiz = self._eliminar(self.raiz, valor)
 
-    def _eliminar(self, nodo, palabra):
+    def _eliminar(self, nodo, valor):
 
         if nodo is None:
             return None
 
-        if palabra in nodo.claves:
-
-            nodo.claves.remove(palabra)
-
-            if len(nodo.claves) == 0 and nodo.es_hoja():
-                return None
-
-            return nodo
+        if valor in nodo.claves:
+            nodo.claves.remove(valor)
 
         i = 0
-
-        while i < len(nodo.claves) and palabra > nodo.claves[i]:
+        while i < len(nodo.claves) and valor > nodo.claves[i]:
             i += 1
 
-        nodo.hijos[i] = self._eliminar(
-            nodo.hijos[i],
-            palabra
-        )
+        nodo.hijos[i] = self._eliminar(nodo.hijos[i], valor)
 
         return nodo
 
-    # ==================================================
+    # =========================
     # RECORRIDO
-    # ==================================================
+    # =========================
 
     def obtener_palabras(self):
 
-        resultado = []
+        res = []
+        self._inorden(self.raiz, res)
+        return res
 
-        self._inorden(
-            self.raiz,
-            resultado
-        )
-
-        return resultado
-
-    def _inorden(self, nodo, lista):
+    def _inorden(self, nodo, res):
 
         if nodo is None:
             return
 
         for i in range(len(nodo.claves)):
+            self._inorden(nodo.hijos[i], res)
+            res.append(nodo.claves[i])
 
-            self._inorden(
-                nodo.hijos[i],
-                lista
-            )
+        self._inorden(nodo.hijos[len(nodo.claves)], res)
 
-            lista.append(
-                nodo.claves[i]
-            )
-
-        self._inorden(
-            nodo.hijos[len(nodo.claves)],
-            lista
-        )
-
-    # ==================================================
-    # CARGA TXT
-    # ==================================================
-
-    def cargar_txt(self, archivo):
-
-        with open(
-            archivo,
-            "r",
-            encoding="utf-8"
-        ) as f:
-
-            for linea in f:
-
-                palabra = linea.strip()
-
-                if palabra:
-                    self.insertar(palabra)
-
-    # ==================================================
-    # CARGA CSV
-    # ==================================================
-
-    def cargar_csv(self, archivo):
-
-        with open(
-            archivo,
-            newline="",
-            encoding="utf-8"
-        ) as f:
-
-            lector = csv.reader(f)
-
-            for fila in lector:
-
-                for palabra in fila:
-
-                    palabra = palabra.strip()
-
-                    if palabra:
-                        self.insertar(palabra)
-
-    # ==================================================
+    # =========================
     # ESTADÍSTICAS
-    # ==================================================
-
-    def cantidad_palabras(self):
-        return len(self.obtener_palabras())
+    # =========================
 
     def contar_nodos(self):
-        return self._contar_nodos(self.raiz)
+        return self._contar(self.raiz)
 
-    def _contar_nodos(self, nodo):
+    def _contar(self, nodo):
 
         if nodo is None:
             return 0
 
         total = 1
-
-        for hijo in nodo.hijos:
-            total += self._contar_nodos(hijo)
-
+        for h in nodo.hijos:
+            total += self._contar(h)
         return total
 
     def altura(self):
@@ -270,11 +182,32 @@ class ArbolMVias:
         if nodo is None:
             return 0
 
-        alturas = []
+        return 1 + max(
+            [self._altura(h) for h in nodo.hijos],
+            default=0
+        )
 
-        for hijo in nodo.hijos:
-            alturas.append(
-                self._altura(hijo)
-            )
+    def cantidad_palabras(self):
+        return len(self.obtener_palabras())
 
-        return 1 + max(alturas, default=0)
+    # =========================
+    # ARCHIVOS
+    # =========================
+
+    def cargar_txt(self, ruta):
+
+        with open(ruta, "r", encoding="utf-8") as f:
+            for line in f:
+                w = line.strip()
+                if w:
+                    self.insertar(w)
+
+    def cargar_csv(self, ruta):
+
+        with open(ruta, newline="", encoding="utf-8") as f:
+            r = csv.reader(f)
+            for row in r:
+                for w in row:
+                    w = w.strip()
+                    if w:
+                        self.insertar(w)

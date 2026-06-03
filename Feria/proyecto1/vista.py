@@ -6,403 +6,116 @@ class Vista:
 
     def __init__(self):
 
-        self.ventana = tk.Tk()
+        self.root = tk.Tk()
+        self.root.title("Diccionario M-Vías")
+        self.root.geometry("1200x750")
 
-        self.ventana.title(
-            "Sistema de Gestión de Diccionario - Árbol M-Vías"
-        )
+        # ======================
+        # ENTRADAS
+        # ======================
 
-        self.ventana.geometry("1200x750")
+        top = tk.Frame(self.root)
+        top.pack(fill="x")
 
-        # =====================================
-        # PANEL SUPERIOR
-        # =====================================
+        tk.Label(top, text="Palabra").pack(side="left")
 
-        frame_superior = tk.Frame(
-            self.ventana
-        )
+        self.entrada = tk.Entry(top, width=25)
+        self.entrada.pack(side="left")
 
-        frame_superior.pack(
-            fill="x",
-            padx=10,
-            pady=10
-        )
+        tk.Label(top, text="Orden").pack(side="left")
 
-        # -------------------------------------
-        # PALABRA
-        # -------------------------------------
+        self.orden = tk.Entry(top, width=5)
+        self.orden.insert(0, "4")
+        self.orden.pack(side="left")
 
-        tk.Label(
-            frame_superior,
-            text="Palabra:"
-        ).pack(side="left")
-
-        self.entrada_palabra = tk.Entry(
-            frame_superior,
-            width=25
-        )
-
-        self.entrada_palabra.pack(
-            side="left",
-            padx=5
-        )
-
-        # -------------------------------------
-        # ORDEN DEL ÁRBOL
-        # -------------------------------------
-
-        tk.Label(
-            frame_superior,
-            text="Orden:"
-        ).pack(
-            side="left",
-            padx=(20, 0)
-        )
-
-        self.entrada_orden = tk.Entry(
-            frame_superior,
-            width=5
-        )
-
-        self.entrada_orden.insert(
-            0,
-            "4"
-        )
-
-        self.entrada_orden.pack(
-            side="left",
-            padx=5
-        )
-
-        # =====================================
+        # ======================
         # BOTONES
-        # =====================================
+        # ======================
 
-        frame_botones = tk.Frame(
-            self.ventana
-        )
+        btns = tk.Frame(self.root)
+        btns.pack(fill="x")
 
-        frame_botones.pack(
-            fill="x",
-            padx=10
-        )
+        self.btn_crear = tk.Button(btns, text="Crear Árbol")
+        self.btn_insertar = tk.Button(btns, text="Insertar")
+        self.btn_buscar = tk.Button(btns, text="Buscar")
+        self.btn_binaria = tk.Button(btns, text="Buscar Binaria")
+        self.btn_eliminar = tk.Button(btns, text="Eliminar")
+        self.btn_txt = tk.Button(btns, text="TXT")
+        self.btn_csv = tk.Button(btns, text="CSV")
+        self.btn_est = tk.Button(btns, text="Ubicacion")
 
-        self.btn_crear_arbol = tk.Button(
-            frame_botones,
-            text="Crear Árbol",
-            width=12
-        )
+        for b in [
+            self.btn_crear,
+            self.btn_insertar,
+            self.btn_buscar,
+            self.btn_binaria,
+            self.btn_eliminar,
+            self.btn_txt,
+            self.btn_csv,
+            self.btn_est
+        ]:
+            b.pack(side="left")
 
-        self.btn_insertar = tk.Button(
-            frame_botones,
-            text="Insertar",
-            width=12
-        )
+        # ======================
+        # SALIDA
+        # ======================
 
-        self.btn_buscar = tk.Button(
-            frame_botones,
-            text="Buscar",
-            width=12
-        )
+        cont = tk.Frame(self.root)
+        cont.pack(fill="both", expand=True)
 
-        self.btn_buscar_binaria = tk.Button(
-            frame_botones,
-            text="Buscar Binaria",
-            width=15
-        )
+        self.texto = scrolledtext.ScrolledText(cont, width=40)
+        self.texto.pack(side="left", fill="y")
 
-        self.btn_eliminar = tk.Button(
-            frame_botones,
-            text="Eliminar",
-            width=12
-        )
+        self.canvas = tk.Canvas(cont, bg="white")
+        self.canvas.pack(side="right", fill="both", expand=True)
 
-        self.btn_mostrar = tk.Button(
-            frame_botones,
-            text="Mostrar",
-            width=12
-        )
+    # ======================
+    # MÉTODOS
+    # ======================
 
-        self.btn_estadisticas = tk.Button(
-            frame_botones,
-            text="Estadísticas",
-            width=12
-        )
+    def get_palabra(self):
+        return self.entrada.get()
 
-        self.btn_cargar_txt = tk.Button(
-            frame_botones,
-            text="Cargar TXT",
-            width=12
-        )
-
-        self.btn_cargar_csv = tk.Button(
-            frame_botones,
-            text="Cargar CSV",
-            width=12
-        )
-
-        self.btn_crear_arbol.pack(
-            side="left",
-            padx=2
-        )
-
-        self.btn_insertar.pack(
-            side="left",
-            padx=2
-        )
-
-        self.btn_buscar.pack(
-            side="left",
-            padx=2
-        )
-
-        self.btn_buscar_binaria.pack(
-            side="left",
-            padx=2
-        )
-
-        self.btn_eliminar.pack(
-            side="left",
-            padx=2
-        )
-
-        self.btn_mostrar.pack(
-            side="left",
-            padx=2
-        )
-
-        self.btn_estadisticas.pack(
-            side="left",
-            padx=2
-        )
-
-        self.btn_cargar_txt.pack(
-            side="left",
-            padx=2
-        )
-
-        self.btn_cargar_csv.pack(
-            side="left",
-            padx=2
-        )
-
-        # =====================================
-        # CONTENIDO
-        # =====================================
-
-        frame_central = tk.Frame(
-            self.ventana
-        )
-
-        frame_central.pack(
-            fill="both",
-            expand=True,
-            padx=10,
-            pady=10
-        )
-
-        # -------------------------------------
-        # ÁREA DE MENSAJES
-        # -------------------------------------
-
-        self.area_texto = scrolledtext.ScrolledText(
-            frame_central,
-            width=40,
-            height=20
-        )
-
-        self.area_texto.pack(
-            side="left",
-            fill="y"
-        )
-
-        # -------------------------------------
-        # CANVAS DEL ÁRBOL
-        # -------------------------------------
-
-        self.canvas = tk.Canvas(
-            frame_central,
-            bg="white"
-        )
-
-        self.canvas.pack(
-            side="right",
-            fill="both",
-            expand=True
-        )
-
-    # =====================================
-    # MÉTODOS AUXILIARES
-    # =====================================
-
-    def obtener_palabra(self):
-        return self.entrada_palabra.get()
-
-    def obtener_orden(self):
-
+    def get_orden(self):
         try:
-            return int(
-                self.entrada_orden.get()
-            )
+            return int(self.orden.get())
         except:
             return 4
 
-    def limpiar_entrada(self):
+    def limpiar(self):
+        self.entrada.delete(0, tk.END)
 
-        self.entrada_palabra.delete(
-            0,
-            tk.END
-        )
+    def msg(self, m):
+        self.texto.insert(tk.END, m + "\n")
 
-    def mostrar_mensaje(
-        self,
-        mensaje
-    ):
-
-        self.area_texto.insert(
-            tk.END,
-            mensaje + "\n"
-        )
-
-        self.area_texto.see(
-            tk.END
-        )
-
-    def limpiar_area(self):
-
-        self.area_texto.delete(
-            "1.0",
-            tk.END
-        )
-
-    # =====================================
-    # DIBUJAR ÁRBOL
-    # =====================================
-
-    def dibujar_arbol(
-        self,
-        raiz
-    ):
+    def dibujar(self, raiz):
 
         self.canvas.delete("all")
 
-        self.canvas.update_idletasks()
-
-        ancho = self.canvas.winfo_width()
-
-        if ancho < 100:
-            ancho = 1000
-
-        if raiz is None:
-
-            self.canvas.create_text(
-                ancho // 2,
-                50,
-                text="Árbol vacío",
-                font=("Arial", 14)
-            )
-
+        if not raiz:
+            self.canvas.create_text(400, 50, text="Árbol vacío")
             return
 
-        self._dibujar_nodo(
-            raiz,
-            ancho // 2,
-            50,
-            ancho // 4
-        )
+        self._dibujar(raiz, 500, 50, 200)
 
-    def _dibujar_nodo(
-        self,
-        nodo,
-        x,
-        y,
-        separacion
-    ):
+    def _dibujar(self, nodo, x, y, sep):
 
-        if nodo is None:
-            return
+        txt = " | ".join(nodo.claves)
 
-        texto = " | ".join(
-            nodo.claves
-        )
+        self.canvas.create_rectangle(x-50, y-20, x+50, y+20)
+        self.canvas.create_text(x, y, text=txt)
 
-        ancho_nodo = max(
-            70,
-            len(texto) * 9
-        )
+        hijos = [h for h in nodo.hijos if h]
 
-        alto_nodo = 40
+        i = 0
+        for h in nodo.hijos:
+            if h:
+                nx = x - sep + i * 80
+                ny = y + 80
 
-        self.canvas.create_rectangle(
-            x - ancho_nodo // 2,
-            y - alto_nodo // 2,
-            x + ancho_nodo // 2,
-            y + alto_nodo // 2
-        )
+                self.canvas.create_line(x, y+20, nx, ny-20)
+                self._dibujar(h, nx, ny, max(50, sep//2))
+                i += 1
 
-        self.canvas.create_text(
-            x,
-            y,
-            text=texto
-        )
-
-        hijos_validos = [
-            h for h in nodo.hijos
-            if h is not None
-        ]
-
-        cantidad = len(
-            hijos_validos
-        )
-
-        if cantidad == 0:
-            return
-
-        inicio = x - separacion
-
-        if cantidad == 1:
-            paso = 0
-        else:
-            paso = (
-                (2 * separacion)
-                // (cantidad - 1)
-            )
-
-        indice = 0
-
-        for hijo in nodo.hijos:
-
-            if hijo is not None:
-
-                nuevo_x = (
-                    inicio
-                    + indice * paso
-                )
-
-                nuevo_y = y + 100
-
-                self.canvas.create_line(
-                    x,
-                    y + 20,
-                    nuevo_x,
-                    nuevo_y - 20
-                )
-
-                self._dibujar_nodo(
-                    hijo,
-                    nuevo_x,
-                    nuevo_y,
-                    max(
-                        60,
-                        separacion // 2
-                    )
-                )
-
-                indice += 1
-
-    # =====================================
-    # EJECUTAR VENTANA
-    # =====================================
-
-    def iniciar(self):
-        self.ventana.mainloop()
+    def run(self):
+        self.root.mainloop()

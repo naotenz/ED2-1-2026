@@ -1,5 +1,4 @@
 from tkinter import filedialog, messagebox
-
 from arbol_mvias import ArbolMVias
 from vista import Vista
 
@@ -8,296 +7,114 @@ class Controlador:
 
     def __init__(self):
 
-        self.modelo = ArbolMVias(4)
         self.vista = Vista()
+        self.modelo = None
 
-        # ==========================
-        # ASIGNAR EVENTOS
-        # ==========================
+        self.vista.btn_crear.config(command=self.crear)
+        self.vista.btn_insertar.config(command=self.insertar)
+        self.vista.btn_buscar.config(command=self.buscar)
+        self.vista.btn_binaria.config(command=self.buscar_bin)
+        self.vista.btn_eliminar.config(command=self.eliminar)
+        self.vista.btn_txt.config(command=self.txt)
+        self.vista.btn_csv.config(command=self.csv)
+        self.vista.btn_est.config(command=self.est)
 
-        self.vista.btn_insertar.config(
-            command=self.insertar
-        )
+    def validar(self):
+        if not self.modelo:
+            messagebox.showwarning("Error", "Crea el árbol primero")
+            return False
+        return True
 
-        self.vista.btn_buscar.config(
-            command=self.buscar
-        )
+    def crear(self):
 
-        self.vista.btn_buscar_binaria.config(
-            command=self.buscar_binaria
-        )
+        o = self.vista.get_orden()
 
-        self.vista.btn_eliminar.config(
-            command=self.eliminar
-        )
+        if o < 2:
+            messagebox.showwarning("Error", "Orden mínimo 2")
+            return
 
-        self.vista.btn_mostrar.config(
-            command=self.mostrar_palabras
-        )
-
-        self.vista.btn_estadisticas.config(
-            command=self.mostrar_estadisticas
-        )
-
-        self.vista.btn_cargar_txt.config(
-            command=self.cargar_txt
-        )
-
-        self.vista.btn_cargar_csv.config(
-            command=self.cargar_csv
-        )
-
-        # Dibujo inicial
-        self.actualizar_vista()
-
-    # =====================================
-    # ACTUALIZAR ÁRBOL EN PANTALLA
-    # =====================================
-
-    def actualizar_vista(self):
-
-        self.vista.dibujar_arbol(
-            self.modelo.raiz
-        )
-
-    # =====================================
-    # INSERTAR
-    # =====================================
+        self.modelo = ArbolMVias(o)
+        self.vista.msg(f"Árbol creado orden {o}")
+        self.actualizar()
 
     def insertar(self):
 
-        palabra = self.vista.obtener_palabra().strip()
-
-        if not palabra:
-
-            messagebox.showwarning(
-                "Advertencia",
-                "Ingrese una palabra"
-            )
-
+        if not self.validar():
             return
 
-        self.modelo.insertar(palabra)
-
-        self.vista.mostrar_mensaje(
-            f"✓ Insertada: {palabra.upper()}"
-        )
-
-        self.vista.limpiar_entrada()
-
-        self.actualizar_vista()
-
-    # =====================================
-    # BUSCAR SECUENCIAL
-    # =====================================
+        w = self.vista.get_palabra()
+        self.modelo.insertar(w)
+        self.vista.msg(f"Insertado {w}")
+        self.actualizar()
 
     def buscar(self):
 
-        palabra = self.vista.obtener_palabra().strip()
-
-        if not palabra:
+        if not self.validar():
             return
 
-        encontrado, comparaciones = (
-            self.modelo.buscar(palabra)
-        )
+        w = self.vista.get_palabra()
+        ok, c = self.modelo.buscar(w)
+        self.vista.msg(f"{w} -> {ok} ({c})")
 
-        if encontrado:
+    def buscar_bin(self):
 
-            self.vista.mostrar_mensaje(
-                f"✓ '{palabra.upper()}' encontrada "
-                f"(Comparaciones: {comparaciones})"
-            )
-
-        else:
-
-            self.vista.mostrar_mensaje(
-                f"✗ '{palabra.upper()}' NO encontrada "
-                f"(Comparaciones: {comparaciones})"
-            )
-
-    # =====================================
-    # BUSCAR BINARIA
-    # =====================================
-
-    def buscar_binaria(self):
-
-        palabra = self.vista.obtener_palabra().strip()
-
-        if not palabra:
+        if not self.validar():
             return
 
-        encontrado, comparaciones = (
-            self.modelo.buscar_binaria(
-                palabra
-            )
-        )
-
-        if encontrado:
-
-            self.vista.mostrar_mensaje(
-                f"✓ Binaria: '{palabra.upper()}' encontrada "
-                f"(Comparaciones: {comparaciones})"
-            )
-
-        else:
-
-            self.vista.mostrar_mensaje(
-                f"✗ Binaria: '{palabra.upper()}' NO encontrada "
-                f"(Comparaciones: {comparaciones})"
-            )
-
-    # =====================================
-    # ELIMINAR
-    # =====================================
+        w = self.vista.get_palabra()
+        ok, c = self.modelo.buscar_binaria(w)
+        self.vista.msg(f"{w} -> {ok} ({c})")
 
     def eliminar(self):
 
-        palabra = self.vista.obtener_palabra().strip()
-
-        if not palabra:
+        if not self.validar():
             return
 
-        self.modelo.eliminar(palabra)
+        w = self.vista.get_palabra()
+        self.modelo.eliminar(w)
+        self.vista.msg(f"Eliminado {w}")
+        self.actualizar()
 
-        self.vista.mostrar_mensaje(
-            f"🗑 Eliminada: {palabra.upper()}"
-        )
+    def txt(self):
 
-        self.vista.limpiar_entrada()
-
-        self.actualizar_vista()
-
-    # =====================================
-    # MOSTRAR PALABRAS
-    # =====================================
-
-    def mostrar_palabras(self):
-
-        palabras = self.modelo.obtener_palabras()
-
-        self.vista.limpiar_area()
-
-        self.vista.mostrar_mensaje(
-            "===== PALABRAS ====="
-        )
-
-        for palabra in palabras:
-
-            self.vista.mostrar_mensaje(
-                palabra
-            )
-
-        self.vista.mostrar_mensaje(
-            f"\nTotal: {len(palabras)}"
-        )
-
-    # =====================================
-    # ESTADÍSTICAS
-    # =====================================
-
-    def mostrar_estadisticas(self):
-
-        total_palabras = (
-            self.modelo.cantidad_palabras()
-        )
-
-        total_nodos = (
-            self.modelo.contar_nodos()
-        )
-
-        altura = (
-            self.modelo.altura()
-        )
-
-        texto = (
-            "\n===== ESTADÍSTICAS =====\n"
-            f"Palabras almacenadas: {total_palabras}\n"
-            f"Número de nodos: {total_nodos}\n"
-            f"Altura del árbol: {altura}\n"
-        )
-
-        self.vista.mostrar_mensaje(texto)
-
-        messagebox.showinfo(
-            "Estadísticas",
-            texto
-        )
-
-    # =====================================
-    # CARGAR TXT
-    # =====================================
-
-    def cargar_txt(self):
-
-        archivo = filedialog.askopenfilename(
-            title="Seleccionar archivo TXT",
-            filetypes=[
-                ("Archivo TXT", "*.txt")
-            ]
-        )
-
-        if not archivo:
+        if not self.validar():
             return
 
-        try:
+        f = filedialog.askopenfilename(filetypes=[("txt", "*.txt")])
+        if f:
+            self.modelo.cargar_txt(f)
+            self.actualizar()
 
-            self.modelo.cargar_txt(
-                archivo
-            )
+    def csv(self):
 
-            self.vista.mostrar_mensaje(
-                f"TXT cargado:\n{archivo}"
-            )
-
-            self.actualizar_vista()
-
-        except Exception as e:
-
-            messagebox.showerror(
-                "Error",
-                str(e)
-            )
-
-    # =====================================
-    # CARGAR CSV
-    # =====================================
-
-    def cargar_csv(self):
-
-        archivo = filedialog.askopenfilename(
-            title="Seleccionar archivo CSV",
-            filetypes=[
-                ("Archivo CSV", "*.csv")
-            ]
-        )
-
-        if not archivo:
+        if not self.validar():
             return
 
-        try:
+        f = filedialog.askopenfilename(filetypes=[("csv", "*.csv")])
+        if f:
+            self.modelo.cargar_csv(f)
+            self.actualizar()
 
-            self.modelo.cargar_csv(
-                archivo
-            )
+    def est(self):
 
-            self.vista.mostrar_mensaje(
-                f"CSV cargado:\n{archivo}"
-            )
+        if not self.validar():
+            return
 
-            self.actualizar_vista()
+        self.vista.msg(
+            f"Palabras: {self.modelo.cantidad_palabras()}\n"
+            f"Nodos: {self.modelo.contar_nodos()}\n"
+            f"Altura: {self.modelo.altura()}"
+        )
 
-        except Exception as e:
+    def actualizar(self):
 
-            messagebox.showerror(
-                "Error",
-                str(e)
-            )
+        if self.modelo:
+            self.vista.dibujar(self.modelo.raiz)
+        else:
+            self.vista.canvas.delete("all")
 
-    # =====================================
-    # EJECUTAR APP
-    # =====================================
+    def run(self):
+        self.vista.run()
 
     def iniciar(self):
-
-        self.vista.iniciar()
+        self.run()
